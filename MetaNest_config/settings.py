@@ -43,6 +43,14 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'drf_yasg',
+
+    'apps.authentication',
+    'apps.dashboard',
+    'apps.apartment_master',
+    'apps.people',
+    'apps.finance',
+    'apps.analytics',
+    'apps.administration',
 ]
 
 MIDDLEWARE = [
