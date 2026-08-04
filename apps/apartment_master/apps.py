@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class ApartmentMasterConfig(AppConfig):
-    name = 'apps.apartment_master'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.apartment_master"
