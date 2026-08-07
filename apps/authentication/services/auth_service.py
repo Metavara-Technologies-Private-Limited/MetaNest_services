@@ -13,7 +13,6 @@ class AuthService:
     """
     Authentication business logic.
     """
-
     @staticmethod
     def send_otp(mobile_number, role):
         try:
@@ -22,6 +21,7 @@ class AuthService:
                 role=role,
                 is_active=True,
             )
+         
         except User.DoesNotExist:
             raise ValidationError(
                 {
@@ -40,7 +40,7 @@ class AuthService:
             mobile_number=user.mobile_number,
             otp=otp.otp,
         )
-
+        
         return {
             "message": "OTP sent successfully."
         }
@@ -86,4 +86,112 @@ class AuthService:
                 "last_name": user.last_name,
                 "role": user.role,
             }
+        }
+
+    @staticmethod
+    def get_profile(user):
+        """
+        Return logged-in user details.
+        """
+
+        return {
+            "id": user.id,
+            "mobile_number": user.mobile_number,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role,
+        }
+
+    @staticmethod
+    def logout(refresh_token):
+        """
+        Blacklist the refresh token.
+        """
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return {
+                "message": "Logout successful."
+            }
+
+        except Exception:
+            raise ValidationError(
+                {
+                    "refresh": [
+                        "Invalid or expired refresh token."
+                    ]
+                }
+            )
+
+
+    @staticmethod
+    def refresh_access_token(refresh_token):
+        """
+        Generate a new access token using refresh token.
+        """
+
+        try:
+            refresh = RefreshToken(refresh_token)
+
+            return {
+                "message": "Access token refreshed successfully.",
+                "access": str(refresh.access_token),
+            }
+
+        except Exception:
+            raise ValidationError(
+                {
+                    "refresh": [
+                        "Invalid or expired refresh token."
+                    ]
+                }
+            )
+
+
+    @staticmethod
+    def resend_otp(mobile_number, role):
+        """
+        Resend login OTP.
+        """
+
+        try:
+            user = User.objects.get(
+                mobile_number=mobile_number,
+                role=role,
+                is_active=True,
+            )
+
+        except User.DoesNotExist:
+            raise ValidationError(
+                {
+                    "mobile_number": [
+                        "User not found or inactive."
+                    ]
+                }
+            )
+
+        OTPService.check_resend_cooldown(
+        user=user,
+        purpose="LOGIN",
+        )
+
+        OTPService.check_resend_attempts(
+        user=user,
+        purpose="LOGIN",
+        )
+
+        otp = OTPService.create_otp(
+            mobile_number=user.mobile_number,
+            purpose="LOGIN",
+        )
+
+        SMSService.send_otp(
+            mobile_number=user.mobile_number,
+            otp=otp.otp,
+        )
+
+        return {
+            "message": "OTP resent successfully."
         }

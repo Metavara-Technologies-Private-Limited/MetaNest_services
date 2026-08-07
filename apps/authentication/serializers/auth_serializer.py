@@ -44,3 +44,10 @@ class VerifyOTPSerializer(serializers.Serializer):
             )
 
         return value
+
+class UserProfileSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    mobile_number = serializers.CharField(read_only=True)
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
+    role = serializers.CharField(read_only=True)

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'drf_yasg',
+    'drf_spectacular',
 
     'apps.authentication',
     'apps.dashboard',
@@ -51,6 +52,8 @@ INSTALLED_APPS = [
     'apps.finance',
     'apps.analytics',
     'apps.administration',
+
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -148,10 +151,32 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ),
 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
 
     "PAGE_SIZE": 10,
 }
 
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+
 AUTH_USER_MODEL = "authentication.User"
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'MetaNest API',
+    'DESCRIPTION': 'MetaNest Backend API Documentation',
+    'VERSION': '1.0.0',
+
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'displayRequestDuration': True,
+        'persistAuthorization': True,
+    },
+}

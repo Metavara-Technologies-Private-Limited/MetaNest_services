@@ -1,7 +1,6 @@
 class SMSService:
     """
-    SMS Service.
-    Replace this implementation with MSG91/Twilio in production.
+    Dummy SMS Service for development.
     """
 
     @staticmethod
