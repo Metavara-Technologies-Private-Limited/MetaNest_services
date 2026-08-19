@@ -38,13 +38,14 @@ class AuthService:
             purpose="LOGIN",
         )
 
-        SMSService.send_otp(
+        otp_value = SMSService.send_otp(
             mobile_number=user.mobile_number,
             otp=otp.otp,
         )
         
         return {
-            "message": "OTP sent successfully."
+            "message": "OTP sent successfully.",
+            "otp": otp_value,
         }
 
     @staticmethod
