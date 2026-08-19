@@ -11,12 +11,16 @@ class SMSService:
         provider = os.getenv("SMS_PROVIDER", "console").lower()
 
         if provider == "console":
-            print("\n" + "=" * 50)
-            print("DEVELOPMENT OTP")
-            print(f"Mobile Number : +91{mobile_number}")
-            print(f"OTP           : {otp}")
-            print("=" * 50 + "\n")
-            return True
+            print(
+                "\n"
+                + "=" * 50
+                + f"\nDEVELOPMENT OTP\nMobile Number : +91{mobile_number}"
+                + f"\nOTP           : {otp}\n"
+                + "=" * 50
+                + "\n",
+                flush=True,
+            )
+            return otp
 
         if provider != "twilio":
             raise RuntimeError(f"Unsupported SMS_PROVIDER: {provider}")
@@ -46,4 +50,4 @@ class SMSService:
             to=f"+91{mobile_number}",
         )
 
-        return True
+        return None
