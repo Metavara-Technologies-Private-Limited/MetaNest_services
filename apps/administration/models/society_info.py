@@ -14,6 +14,8 @@ class SocietyInfo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = "administration"
+        db_table = "society_info"
         verbose_name_plural = "Society Info"
 
     def __str__(self):
