@@ -18,17 +18,19 @@ class AuthService:
         try:
             user = User.objects.get(
                 mobile_number=mobile_number,
-                role=role,
-                is_active=True,
             )
-         
         except User.DoesNotExist:
+            user = User.objects.create_user(
+                mobile_number=mobile_number,
+                role=role,
+            )
+
+        if not user.is_active:
+            raise ValidationError({"mobile_number": ["User is inactive."]})
+
+        if user.role != role:
             raise ValidationError(
-                {
-                    "mobile_number": [
-                        "User not found or inactive."
-                    ]
-                }
+                {"role": ["This mobile number is registered with another role."]}
             )
 
         otp = OTPService.create_otp(
@@ -36,13 +38,14 @@ class AuthService:
             purpose="LOGIN",
         )
 
-        SMSService.send_otp(
+        otp_value = SMSService.send_otp(
             mobile_number=user.mobile_number,
             otp=otp.otp,
         )
         
         return {
-            "message": "OTP sent successfully."
+            "message": "OTP sent successfully.",
+            "otp": otp_value,
         }
 
     @staticmethod

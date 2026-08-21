@@ -39,13 +39,14 @@ class SendOTPAPIView(APIView):
             role=serializer.validated_data["role"],
         )
 
-        return Response(
-            {
-                "success": True,
-                "message": response["message"],
-            },
-            status=status.HTTP_200_OK,
-        )
+        response_data = {
+            "success": True,
+            "message": response["message"],
+        }
+        if response.get("otp"):
+            response_data["otp"] = response["otp"]
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class VerifyOTPAPIView(APIView):
     """
