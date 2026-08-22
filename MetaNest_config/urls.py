@@ -37,6 +37,11 @@ urlpatterns = [
     ),
 
     path(
+        "api/v1/finance/",
+        include("apps.finance.urls"),
+    ),
+
+    path(
     "",
     RedirectView.as_view(url="/swagger/", permanent=False),
     ),
