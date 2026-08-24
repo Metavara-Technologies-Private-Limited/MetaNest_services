@@ -7,5 +7,5 @@ urlpatterns = [
     path('notification-settings/', include('apps.administration.urls.notification_setting_urls')),
     path('notifications/', include('apps.administration.urls.notification_urls')),
     path('roles/', include('apps.administration.urls.role_urls')),
-    path('users/', include('apps.administration.urls.user_urls')),
+    path('', include('apps.administration.urls.user_urls')),
 ]
