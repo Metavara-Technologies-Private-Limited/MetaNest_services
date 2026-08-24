@@ -80,6 +80,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=""
     )
 
+    email = models.EmailField(
+        blank=True,
+        default=""
+    )
+
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
