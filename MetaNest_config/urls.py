@@ -64,4 +64,8 @@ path(
     SpectacularRedocView.as_view(url_name="schema"),
     name="redoc",
 ),
+path(
+    "api/v1/apartment-master/",
+    include("apps.apartment_master.urls"),
+),
 ]
