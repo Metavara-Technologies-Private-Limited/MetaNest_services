@@ -49,6 +49,11 @@ urlpatterns = [
     ),
 
     path(
+        "api/v1/people/",
+        include("apps.people.urls"),
+    ),
+
+    path(
     "",
     RedirectView.as_view(url="/swagger/", permanent=False),
     ),
@@ -68,6 +73,11 @@ path(
 ),
 path(
     "api/v1/apartment-master/",
+    include("apps.apartment_master.urls"),
+),
+
+path(
+    "api/v1/master/",
     include("apps.apartment_master.urls"),
 ),
 ]

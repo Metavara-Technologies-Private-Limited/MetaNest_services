@@ -28,6 +28,8 @@ class Resident(models.Model):
 
     phone = models.CharField(max_length=15)
 
+    email = models.EmailField(blank=True, default="")
+
     move_in_date = models.DateField()
 
     family_members = models.PositiveIntegerField(default=1)

@@ -6,7 +6,7 @@ User = get_user_model()
 
 class AdminUserSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(source='mobile_number', write_only=True, required=True)
-    email = serializers.EmailField(required=True)
+    email = serializers.EmailField(required=False, allow_blank=True)
     status = serializers.SerializerMethodField()
 
     class Meta:
@@ -35,9 +35,12 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         mobile_number = attrs.get('mobile_number')
-        if User.objects.filter(mobile_number=mobile_number).exists():
+        existing_users = User.objects.all()
+        if self.instance:
+            existing_users = existing_users.exclude(pk=self.instance.pk)
+        if mobile_number and existing_users.filter(mobile_number=mobile_number).exists():
             raise serializers.ValidationError({'phone_number': 'A user with this phone number already exists.'})
-        if User.objects.filter(email=attrs.get('email')).exists():
+        if attrs.get('email') and existing_users.filter(email=attrs.get('email')).exists():
             raise serializers.ValidationError({'email': 'A user with this email already exists.'})
         return attrs
 

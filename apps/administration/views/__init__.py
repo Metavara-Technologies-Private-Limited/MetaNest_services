@@ -4,7 +4,7 @@ from .billing_setting_view import BillingSettingView
 from .notification_setting_view import NotificationSettingView
 from .notification_view import NotificationListView, NotificationMarkAllReadView
 from .role_view import RoleListView
-from .user_view import AdminUserListView, AdminUserToggleStatusView
+from .user_view import AdminUserDetailView, AdminUserListView, AdminUserToggleStatusView
 
 __all__ = [
     'SocietyInfoView',
@@ -15,5 +15,6 @@ __all__ = [
     'NotificationMarkAllReadView',
     'RoleListView',
     'AdminUserListView',
+    'AdminUserDetailView',
     'AdminUserToggleStatusView',
 ]

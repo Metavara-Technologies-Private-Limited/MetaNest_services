@@ -21,10 +21,31 @@ class AdminUserListView(APIView):
         return Response(AdminUserSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
+class AdminUserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, user_id):
+        user = AdminUserService.get_user_by_id(user_id)
+        if not user:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = AdminUserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(AdminUserSerializer(serializer.save()).data, status=status.HTTP_200_OK)
+
+    def delete(self, request, user_id):
+        user = AdminUserService.get_user_by_id(user_id)
+        if not user:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        if user.id == request.user.id:
+            return Response({"error": "You cannot delete the account currently signed in."}, status=status.HTTP_400_BAD_REQUEST)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class AdminUserToggleStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, user_id):
+    def patch(self, request, user_id):
         user = AdminUserService.toggle_user_status(user_id)
         if user:
             serializer = AdminUserSerializer(user)

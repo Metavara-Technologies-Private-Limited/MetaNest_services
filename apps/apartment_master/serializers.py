@@ -48,6 +48,8 @@ class WingSerializer(serializers.ModelSerializer):
             "id",
             "society",
             "name",
+            "code",
+            "description",
             "total_floors",
             "is_active",
             "created_at",
@@ -79,6 +81,18 @@ class FloorSerializer(serializers.ModelSerializer):
     def get_total_flats(self, obj):
         return services.get_floor_total_flats(obj)
 
+    def validate(self, attrs):
+        wing = attrs.get("wing", getattr(self.instance, "wing", None))
+        floor_number = attrs.get("floor_number", getattr(self.instance, "floor_number", None))
+        existing = Floor.all_objects.filter(wing=wing, floor_number=floor_number)
+        if self.instance:
+            existing = existing.exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise serializers.ValidationError({
+                "floor_number": "This floor number already exists in the selected wing."
+            })
+        return attrs
+
 
 class FlatTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,7 +103,6 @@ class FlatTypeSerializer(serializers.ModelSerializer):
 
 class FlatSerializer(serializers.ModelSerializer):
     flat_type_name = serializers.CharField(source="flat_type.name", read_only=True)
-    occupancy_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Flat
@@ -108,9 +121,6 @@ class FlatSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
-
-    def get_occupancy_status(self, obj):
-        return services.get_flat_occupancy_status(obj)
 
     def validate_carpet_area_sqft(self, value):
         if value <= 0:

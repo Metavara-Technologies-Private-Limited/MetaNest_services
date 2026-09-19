@@ -59,6 +59,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
+        SUPER_ADMIN = "SUPER_ADMIN", "Super Admin"
+        TREASURER = "TREASURER", "Treasurer"
+        SECURITY = "SECURITY", "Security"
         RESIDENT = "RESIDENT", "Resident"
 
     mobile_number = models.CharField(

@@ -44,20 +44,15 @@ def get_society_summary(society: Society) -> dict:
 
 def get_occupied_flats_count(society: Society) -> int:
     """
-    Placeholder integration point. Occupancy is NOT determined here —
-    it depends on the `people` app (Resident / Ownership / Tenancy models),
-    which doesn't exist yet. Once it does, replace this with a real query,
-    e.g.:
-
-        from apps.people.models import Tenancy
-        return Tenancy.objects.filter(
-            flat__floor__wing__society=society, is_active=True
-        ).values("flat_id").distinct().count()
-
-    Until then this returns 0 so dashboard/analytics code can be wired up
-    against a stable interface without waiting on the People module.
+    A flat is occupied when it has at least one active resident. Distinct
+    flat IDs prevent multiple residents in one home from inflating the count.
     """
-    return 0
+    from apps.people.models import Resident
+
+    return Resident.objects.filter(
+        flat__floor__wing__society=society,
+        status="Active",
+    ).values("flat_id").distinct().count()
 
 
 # ---------------------------------------------------------------------------
@@ -110,11 +105,14 @@ def create_flat(
 
 def get_flat_occupancy_status(flat: Flat) -> str:
     """
-    Placeholder — same reasoning as get_occupied_flats_count above.
-    Will query People.Ownership / People.Tenancy once that app exists.
-    Returns one of: 'owner_occupied', 'tenant_occupied', 'vacant', 'unknown'.
+    A flat with at least one active resident is occupied; otherwise it is
+    vacant. This keeps the status aligned with society and wing totals.
     """
-    return "unknown"
+    from apps.people.models import Resident
+
+    if flat.occupancy_status == Flat.OccupancyStatus.OCCUPIED:
+        return "occupied"
+    return "occupied" if Resident.objects.filter(flat=flat, status="Active").exists() else "vacant"
 
 
 from typing import Any

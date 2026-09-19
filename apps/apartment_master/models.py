@@ -132,6 +132,9 @@ class Wing(BaseModel):
         help_text="Unique wing identifier (e.g. A, B, C).",
     )
 
+    code = models.CharField(max_length=20, blank=True, default="")
+    description = models.TextField(blank=True, default="")
+
     class Meta:
         verbose_name = "Wing"
         verbose_name_plural = "Wings"
@@ -235,6 +238,10 @@ class Flat(BaseModel):
         SOUTH_EAST = "SE", "South-East"
         SOUTH_WEST = "SW", "South-West"
 
+    class OccupancyStatus(models.TextChoices):
+        OCCUPIED = "occupied", "Occupied"
+        VACANT = "vacant", "Vacant"
+
     floor = models.ForeignKey(
         Floor,
         on_delete=models.PROTECT,
@@ -271,6 +278,11 @@ class Flat(BaseModel):
         choices=Facing.choices,
         blank=True,
         verbose_name="Facing",
+    )
+    occupancy_status = models.CharField(
+        max_length=20,
+        choices=OccupancyStatus.choices,
+        default=OccupancyStatus.VACANT,
     )
 
     class Meta:
