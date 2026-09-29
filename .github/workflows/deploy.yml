@@ -27,6 +27,9 @@ jobs:
           script: |
             set -e
 
+            #Ensure Docker is running
+            sudo systemctl start docker || true
+
             cd /root/MetaNest_services
 
             git fetch origin
