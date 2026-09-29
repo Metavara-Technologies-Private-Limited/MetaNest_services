@@ -1,10 +1,10 @@
+
 name: Deploy MetaNest Backend
 
 on:
   push:
     branches:
       - dev
-
   workflow_dispatch:
 
 jobs:
@@ -23,20 +23,31 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
-
           script: |
             set -e
 
-            #Ensure Docker is running
-            sudo systemctl start docker || true
+            sudo systemctl enable --now docker
+            sudo systemctl status docker --no-pager || true
+
+            echo "Docker status:"
+            docker version || true
+            docker compose version || true
+            docker-compose --version || true
+
+            echo "DOCKER_HOST=$DOCKER_HOST"
+            env | grep DOCKER || true
 
             cd /root/MetaNest_services
-
             git fetch origin
             git checkout dev
             git reset --hard origin/dev
 
-            docker-compose rm -sf backend || true
-            docker-compose up -d --build
+            if docker compose version >/dev/null 2>&1; then
+              docker compose down --remove-orphans || true
+              docker compose up -d --build
+            else
+              docker-compose down --remove-orphans || true
+              docker-compose up -d --build
+            fi
 
-            docker-compose ps
+            docker compose ps || docker-compose ps
